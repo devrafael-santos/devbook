@@ -15,8 +15,8 @@ type Usuario struct {
 	CriadoEm time.Time `json:"CriadoEm,omitempty"`
 }
 
-func (usuario *Usuario) Preparar() error {
-	if erro := usuario.Validar(); erro != nil {
+func (usuario *Usuario) Preparar(etapa string) error {
+	if erro := usuario.validar(etapa); erro != nil {
 		return erro
 	}
 
@@ -24,7 +24,7 @@ func (usuario *Usuario) Preparar() error {
 	return nil
 }
 
-func (usuario *Usuario) Validar() error {
+func (usuario *Usuario) validar(etapa string) error {
 	if usuario.Nome == "" {
 		return errors.New("o nome é obrigatório. Não pode estar em branco")
 	}
@@ -37,7 +37,7 @@ func (usuario *Usuario) Validar() error {
 		return errors.New("o email é obrigatório. Não pode estar em branco")
 	}
 
-	if usuario.Senha == "" {
+	if etapa == "cadastro" && usuario.Senha == "" {
 		return errors.New("a senha é obrigatório. Não pode estar em branco")
 	}
 
