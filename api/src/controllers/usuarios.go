@@ -165,7 +165,7 @@ func DeletarUsuario(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if usuarioID != usuarioIDNoToken {
-		respostas.Erro(w, http.StatusForbidden, errors.New("você não tem permissão de atualizar este usuário"))
+		respostas.Erro(w, http.StatusForbidden, errors.New("você não tem permissão de deletar este usuário"))
 	}
 
 	db, erro := banco.Conectar()
