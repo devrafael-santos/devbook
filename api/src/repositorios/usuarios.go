@@ -3,6 +3,7 @@ package repositorios
 import (
 	"api/src/modelos"
 	"database/sql"
+	"errors"
 	"fmt"
 )
 
@@ -116,4 +117,46 @@ func (repositorio Usuarios) BuscarPorEmail(email string) (modelos.Usuario, error
 	}
 
 	return usuario, nil
+}
+
+func (repositorio Usuarios) Seguir(usuarioID, seguidorID uint64) error {
+	statement, erro := repositorio.db.Prepare("insert ignore into seguidores (usuario_id, seguidor_id) values (?, ?)")
+	if erro != nil {
+		return erro
+	}
+	defer statement.Close()
+
+	linhas, erro := statement.Exec(usuarioID, seguidorID)
+	if erro != nil {
+		return erro
+	}
+
+	if linhasAfetadas, erro := linhas.RowsAffected(); erro != nil {
+		return erro
+	} else if linhasAfetadas <= 0 {
+		return errors.New("você já segue este usuario")
+	}
+
+	return nil
+}
+
+func (repositorio Usuarios) DeixarDeSeguir(usuarioID, seguidorID uint64) error {
+	statement, erro := repositorio.db.Prepare("delete from seguidores where usuario_id = ? and seguidor_id = ?")
+	if erro != nil {
+		return erro
+	}
+	defer statement.Close()
+
+	linhas, erro := statement.Exec(usuarioID, seguidorID)
+	if erro != nil {
+		return erro
+	}
+
+	if linhasAfetadas, erro := linhas.RowsAffected(); erro != nil {
+		return erro
+	} else if linhasAfetadas <= 0 {
+		return errors.New("você já não segue este usuario")
+	}
+
+	return nil
 }
